@@ -9,6 +9,7 @@ from rag.indexing.index_documents import index_pdf_documents
 from rag.indexing.vector_store import create_vector_store
 from rag.tools.make_retrieve_context_tool import make_retrieve_context_tool
 from langgraph.checkpoint.sqlite import SqliteSaver
+from rag.tools.googleTrends.googleTrendsTool import google_trends
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,9 @@ pdf_path = Path("data/raw_pdfs/sensor_tower__state_of_mobile_2026__en.pdf")
 index_pdf_documents(vector_store=vector_store, pdf_path=pdf_path)
 
 retrieve_context_tool = make_retrieve_context_tool(vector_store)
-tools = [retrieve_context_tool]
+
+
+tools = [retrieve_context_tool, google_trends]
 
 prompt = (
     "You have access to a tool that retrieves context from a blog post. "

@@ -1,0 +1,19 @@
+.env
+.env.*
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.python-version
+
+# Local vector store / checkpoints
+chroma_langchain.db/
+checkpoints.db
+*.sqlite
+*.db
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
