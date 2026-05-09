@@ -1,19 +1,22 @@
-import json
+from pydantic import ValidationError
 import streamlit as st
+from app.domain.feasability_form_input import FeasabilityFormInput
+from rag.RAG import run_feasibility_analysis
 
 from app.ui.navigation import prev_step
 
+def render_review_step(agent) -> None:
+    raw_data = st.session_state.form_data
 
-def render_review_step() -> None:
-    data = st.session_state.form_data
-
+    try:
+        formInput = FeasabilityFormInput.model_validate(raw_data)
+    except ValidationError as e:
+        st.error("Please fix the form data before running the analysis.")
+        st.json(e.errors())
+        return
+    
     st.subheader("Structured RAG Input")
-    st.json(data)
-
-    prompt_payload = build_prompt_payload(data)
-
-    st.subheader("Prompt Payload")
-    st.code(json.dumps(prompt_payload, indent=2), language="json")
+    st.json(formInput)
 
     col1, col2 = st.columns(2)
 
@@ -22,6 +25,8 @@ def render_review_step() -> None:
 
     with col2:
         if st.button("Run RAG Analysis"):
+            # TODO: probably in here we have all of the error handling as well?
+            result = run_feasibility_analysis(agent, formInput)
             st.success("Send this JSON payload to your RAG backend.")
             # Example:
             # response = requests.post(
@@ -29,19 +34,4 @@ def render_review_step() -> None:
             #     json=prompt_payload,
             # )
             # st.write(response.json())
-            
-def build_prompt_payload(data: dict) -> dict:
-    return {
-        "task": "Analyze mobile app idea feasibility and profitability.",
-        "input": data,
-        "required_output": {
-            "feasibility_score": "0-100",
-            "profitability_score": "0-100",
-            "market_demand": "analysis with evidence",
-            "competition": "analysis with competitor references",
-            "monetization": "recommendation",
-            "risks": "ranked list",
-            "mvp_scope": "recommended MVP features",
-            "go_no_go": "Go | No-go | Needs validation",
-        },
-    }
+        

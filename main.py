@@ -1,14 +1,19 @@
 import streamlit as st
-
+import logging
 from app.state.form_state import init_form_state
 from app.ui.form_steps.step_bussiness import render_business_step
 from app.ui.form_steps.step_idea import render_idea_step
 from app.ui.form_steps.step_market import render_market_step
 from app.ui.form_steps.step_review import render_review_step
+from rag.agents.bootstrap import create_rag_agent
 
+logging.basicConfig(level=logging.INFO)
+rag_agent = create_rag_agent()
+
+# TODO: thesse steps maybe should be an enum and transferred somewhere else
 STEPS = ["Idea", "Market", "Business", "Review"]
 
-st.set_page_config(page_title="App Idea Feasibility Wizard", layout="centered")
+st.set_page_config(page_title="App Idea Feasibility Calculator", layout="centered")
 
 
 def render_progress_header() -> None:
@@ -32,4 +37,4 @@ elif step == 1:
 elif step == 2:
     render_business_step()
 else:
-    render_review_step()
+    render_review_step(rag_agent)

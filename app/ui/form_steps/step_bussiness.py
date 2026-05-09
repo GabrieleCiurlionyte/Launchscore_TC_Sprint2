@@ -1,7 +1,9 @@
+from pydantic import ValidationError
 import streamlit as st
 
 from app.ui.navigation import next_step, prev_step
 from app.utils.text_helpers import split_comma_text
+from app.domain.bussiness_input import BusinessInput
 
 
 def render_business_step() -> None:
@@ -99,39 +101,36 @@ def render_business_step() -> None:
         submitted = st.form_submit_button("Save and review")
 
         if submitted:
-            errors = []
-
-            if not differentiation.strip():
-                errors.append("Differentiation is required.")
-
-            if expected_price_period == "Free" and expected_price_eur != 0:
-                errors.append("Expected price must be 0 EUR when the price period is Free.")
-
-            if expected_price_period != "Free" and expected_price_eur == 0:
-                errors.append("Set a price above 0 EUR or choose Free as the price period.")
-
-            if build_budget_eur <= 0:
-                errors.append("Build budget must be greater than 0 EUR.")
-
-            if timeline_months <= 0:
-                errors.append("Timeline must be at least 1 month.")
-
-            if errors:
-                for error in errors:
-                    st.error(error)
-                return
-
-            data["business"] = {
+            raw_business_data = {
                 "monetization_model": monetization_model,
                 "expected_price_eur": expected_price_eur,
                 "expected_price_period": expected_price_period,
                 "paid_features": split_comma_text(paid_features),
                 "known_competitors": split_comma_text(competitors),
-                "differentiation": differentiation.strip(),
+                "differentiation": differentiation,
                 "build_budget_eur": build_budget_eur,
                 "timeline_months": timeline_months,
                 "team_size": team_size,
             }
+
+            try:
+                business_input = BusinessInput.model_validate(raw_business_data)
+            except ValidationError as e:
+                for err in e.errors():
+                    loc = err.get("loc", ())
+                    message = err["msg"]
+
+                if message.startswith("Value error, "):
+                    message = message.removeprefix("Value error, ")
+
+                if loc:
+                    field_path = ".".join(str(part) for part in loc)
+                    st.error(f"{field_path}: {message}")
+                else:
+                    st.error(message)
+                return
+
+            st.session_state.form_data["business"] = business_input.model_dump()
             next_step()
             st.rerun()
 

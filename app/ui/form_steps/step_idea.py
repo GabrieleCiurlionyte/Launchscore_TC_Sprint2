@@ -1,5 +1,7 @@
+from pydantic import ValidationError
 import streamlit as st
 
+from app.domain.idea_input import IdeaInput
 from app.ui.navigation import next_step
 from app.utils.text_helpers import split_comma_text
 
@@ -36,20 +38,31 @@ def render_idea_step() -> None:
         submitted = st.form_submit_button("Save and continue")
 
         if submitted:
-            if not pitch or not problem or not target_users:
-                st.error("Pitch, problem, and target users are required.")
-                return
 
-            data["idea"] = {
+            raw_idea_data = {
                 "one_sentence_pitch": pitch,
                 "problem_solved": problem,
                 "target_users": target_users,
                 "target_countries": split_comma_text(countries),
-                "category": {
-                    "mode": "auto",
-                    "inferred_primary": None,
-                    "inferred_related": [],
-                },
             }
+            
+            try:
+                idea_input = IdeaInput.model_validate(raw_idea_data)
+            except ValidationError as e:
+                for err in e.errors():
+                    loc = err.get("loc", ())
+                    message = err["msg"]
+
+                    if message.startswith("Value error, "):
+                        message = message.removeprefix("Value error, ")
+
+                    if loc:
+                        st.error(f"{loc[0]}: {message}")
+                    else:
+                        st.error(message)
+
+                return
+            
+            st.session_state.form_data["idea"] = idea_input.model_dump()
             next_step()
             st.rerun()
