@@ -32,10 +32,29 @@ def render_business_step() -> None:
             index=monetization_index,
         )
 
-        expected_price = st.text_input(
-            "Expected price",
-            value=data["business"].get("expected_price", ""),
-            placeholder="Example: EUR 4.99/month",
+        expected_price_eur = st.number_input(
+            "Expected price (EUR)",
+            min_value=0.0,
+            value=float(data["business"].get("expected_price_eur", 0.0)),
+            step=1.0,
+            help="Use 0 if the app will be free at launch.",
+        )
+
+        billing_period_options = ["Monthly", "Yearly", "One-time", "Free", "Not sure"]
+        saved_billing_period = data["business"].get(
+            "expected_price_period",
+            "Not sure",
+        )
+        billing_period_index = (
+            billing_period_options.index(saved_billing_period)
+            if saved_billing_period in billing_period_options
+            else len(billing_period_options) - 1
+        )
+
+        expected_price_period = st.selectbox(
+            "Price period",
+            billing_period_options,
+            index=billing_period_index,
         )
 
         paid_features = st.text_area(
@@ -56,16 +75,18 @@ def render_business_step() -> None:
             placeholder="Example: It focuses only on Lithuanian students and shows real-time availability.",
         )
 
-        budget = st.text_input(
-            "Build budget",
-            value=data["business"].get("budget", ""),
-            placeholder="Example: EUR 2,000",
+        build_budget_eur = st.number_input(
+            "Build budget (EUR)",
+            min_value=0,
+            value=int(data["business"].get("build_budget_eur", 0)),
+            step=500,
         )
 
-        timeline = st.text_input(
-            "Timeline",
-            value=data["business"].get("timeline", ""),
-            placeholder="Example: 3 months",
+        timeline_months = st.number_input(
+            "Timeline (months)",
+            min_value=1,
+            value=int(data["business"].get("timeline_months", 3)),
+            step=1,
         )
 
         team_size = st.number_input(
@@ -78,18 +99,37 @@ def render_business_step() -> None:
         submitted = st.form_submit_button("Save and review")
 
         if submitted:
-            if not differentiation:
-                st.error("Differentiation is required.")
+            errors = []
+
+            if not differentiation.strip():
+                errors.append("Differentiation is required.")
+
+            if expected_price_period == "Free" and expected_price_eur != 0:
+                errors.append("Expected price must be 0 EUR when the price period is Free.")
+
+            if expected_price_period != "Free" and expected_price_eur == 0:
+                errors.append("Set a price above 0 EUR or choose Free as the price period.")
+
+            if build_budget_eur <= 0:
+                errors.append("Build budget must be greater than 0 EUR.")
+
+            if timeline_months <= 0:
+                errors.append("Timeline must be at least 1 month.")
+
+            if errors:
+                for error in errors:
+                    st.error(error)
                 return
 
             data["business"] = {
                 "monetization_model": monetization_model,
-                "expected_price": expected_price,
+                "expected_price_eur": expected_price_eur,
+                "expected_price_period": expected_price_period,
                 "paid_features": split_comma_text(paid_features),
                 "known_competitors": split_comma_text(competitors),
-                "differentiation": differentiation,
-                "budget": budget,
-                "timeline": timeline,
+                "differentiation": differentiation.strip(),
+                "build_budget_eur": build_budget_eur,
+                "timeline_months": timeline_months,
                 "team_size": team_size,
             }
             next_step()
