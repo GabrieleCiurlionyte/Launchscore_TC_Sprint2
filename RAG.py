@@ -30,7 +30,6 @@ index_pdf_documents(vector_store=vector_store, pdf_path=pdf_path)
 
 retrieve_context_tool = make_retrieve_context_tool(vector_store)
 
-
 tools = [retrieve_context_tool, google_trends]
 
 prompt = (
