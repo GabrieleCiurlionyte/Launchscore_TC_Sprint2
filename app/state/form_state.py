@@ -1,4 +1,5 @@
 import streamlit as st
+import uuid
 
 DEFAULT_DATA = {
     "idea": {},
@@ -12,3 +13,6 @@ def init_form_state() -> None:
 
     if "form_data" not in st.session_state:
         st.session_state.form_data = DEFAULT_DATA.copy()
+
+    if "analysis_thread_id" not in st.session_state:
+        st.session_state.analysis_thread_id = str(uuid.uuid4())

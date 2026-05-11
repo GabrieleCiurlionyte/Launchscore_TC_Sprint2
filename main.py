@@ -8,12 +8,16 @@ from app.ui.form_steps.step_review import render_review_step
 from rag.agents.bootstrap import create_rag_agent
 
 logging.basicConfig(level=logging.INFO)
-rag_agent = create_rag_agent()
 
 # TODO: thesse steps maybe should be an enum and transferred somewhere else
 STEPS = ["Idea", "Market", "Business", "Review"]
 
 st.set_page_config(page_title="App Idea Feasibility Calculator", layout="centered")
+
+
+@st.cache_resource
+def get_rag_agent():
+    return create_rag_agent()
 
 
 def render_progress_header() -> None:
@@ -37,4 +41,9 @@ elif step == 1:
 elif step == 2:
     render_business_step()
 else:
+    try:
+        rag_agent = get_rag_agent()
+    except RuntimeError as exc:
+        st.error(str(exc))
+        st.stop()
     render_review_step(rag_agent)

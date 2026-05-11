@@ -12,3 +12,7 @@ def create_vector_store(embeddings, persist_directory: str):
     )
     logger.info("Vector store loaded")
     return vector_store
+
+
+def get_document_count(vector_store: Chroma) -> int:
+    return vector_store._collection.count()

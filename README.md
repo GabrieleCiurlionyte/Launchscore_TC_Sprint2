@@ -18,6 +18,7 @@ After pulling the repository, install dependencies and start the Streamlit app w
 
 ```bash
 uv sync
+uv run python scripts/build_index.py
 uv run streamlit run main.py
 ```
 
@@ -39,5 +40,8 @@ Then clone the repository and run:
 
 ```bash
 uv sync
+uv run python scripts/build_index.py
 uv run streamlit run main.py
 ```
+
+Re-run `uv run python scripts/build_index.py` whenever the source PDF data changes. The Streamlit app now only loads the persisted vector store at runtime, so it does not re-embed the document corpus on every rerun.

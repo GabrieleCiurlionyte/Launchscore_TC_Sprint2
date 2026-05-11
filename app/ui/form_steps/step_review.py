@@ -26,7 +26,11 @@ def render_review_step(agent) -> None:
     with col2:
         if st.button("Run RAG Analysis"):
             # TODO: probably in here we have all of the error handling as well?
-            result = run_feasibility_analysis(agent, formInput)
+            result = run_feasibility_analysis(
+                agent,
+                formInput,
+                thread_id=st.session_state.analysis_thread_id,
+            )
             st.success("Send this JSON payload to your RAG backend.")
             # Example:
             # response = requests.post(

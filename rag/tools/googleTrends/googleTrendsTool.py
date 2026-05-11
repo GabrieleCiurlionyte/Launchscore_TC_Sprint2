@@ -3,7 +3,6 @@ from langchain.tools import tool
 
 from rag.tools.googleTrends.googleTrends import GoogleTrendsClient
 
-google_trends_client = GoogleTrendsClient()
 
 @tool
 def google_trends(keyword: str, geo: str = "") -> dict:
@@ -18,5 +17,6 @@ def google_trends(keyword: str, geo: str = "") -> dict:
     For example: Alabama would be 'US-AL'
     For example: England would be 'GB-ENG'
     """
+    google_trends_client = GoogleTrendsClient()
     result = google_trends_client.run(keyword=keyword, geo=geo)
     return asdict(result)
