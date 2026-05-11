@@ -10,6 +10,12 @@ def google_trends(keyword: str, geo: str = "") -> dict:
     
     Key parameter describes keywords to get Google Trend data for.
     
+     Usage rules:
+    - Use for one keyword only.
+    - Use for one geography only.
+    - Do not use for bulk comparison across many countries.
+    - Do not use for many keyword variants in one analysis.
+    
     Country code is a two letter country abbreviation.
     For example United States is 'US'
     If country code is not provided it defaults to World

@@ -16,7 +16,7 @@ class BusinessInput(BaseModel):
     paid_features: list[str] = Field(default_factory=list)
     known_competitors: list[str] = Field(default_factory=list)
     differentiation: str
-    build_budget_eur: int = Field(gt=0)
+    build_budget_eur: int = Field(ge=0)
     timeline_months: int = Field(gt=0)
     team_size: int = Field(ge=1, le=50)
 

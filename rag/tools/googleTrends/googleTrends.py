@@ -1,18 +1,15 @@
 from __future__ import annotations
 
+import logging
+import time
 from dataclasses import dataclass, asdict
 from typing import Any
+
+from pytrends import exceptions as pytrends_exceptions
 from pytrends.request import TrendReq
-import logging
 
-FORMAT = (
-    "%(asctime)s %(levelname)-8s %(name)s "
-    "keyword=%(keyword)s geo=%(geo)s timeframe=%(timeframe)s "
-    "%(message)s"
-)
-
-logging.basicConfig(level=logging.INFO, format=FORMAT)
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class TrendsResult:
@@ -26,7 +23,7 @@ class TrendsResult:
     peak_score: float | None
     top_regions: list[dict[str, Any]]
 
-# TODO: add exception handling like timeout issues
+
 class GoogleTrendsClient:
     def __init__(self, hl: str = "en-US", tz: int = 180) -> None:
         self.client = TrendReq(hl=hl, tz=tz)
@@ -36,10 +33,9 @@ class GoogleTrendsClient:
         keyword: str,
         geo: str = "",
     ) -> TrendsResult:
-        
         timeframe = "today 12-m"
         category = 0
-        
+
         log = logging.LoggerAdapter(
             logger,
             {
@@ -48,7 +44,7 @@ class GoogleTrendsClient:
                 "timeframe": timeframe,
             },
         )
-        
+
         log.info("Building Google Trends payload")
         self.client.build_payload(
             kw_list=[keyword],
@@ -57,7 +53,34 @@ class GoogleTrendsClient:
             geo=geo,
         )
 
-        iot = self.client.interest_over_time()
+        iot = None
+
+        for attempt in range(3):
+            try:
+                iot = self.client.interest_over_time()
+                break
+            except pytrends_exceptions.TooManyRequestsError:
+                wait_seconds = 2 ** (attempt + 1)
+                log.warning(
+                    "Google Trends rate limited request, retrying in %s seconds",
+                    wait_seconds,
+                )
+                time.sleep(wait_seconds)
+
+        if iot is None:
+            log.warning("Google Trends remained unavailable after retries")
+            return TrendsResult(
+                keyword=keyword,
+                geo=geo,
+                timeframe=timeframe,
+                trend_direction="unknown",
+                growth_90d_pct=None,
+                latest_score=None,
+                avg_score=None,
+                peak_score=None,
+                top_regions=[],
+            )
+
         if iot.empty:
             log.warning("No Google Trends data returned")
             raise ValueError(f"No Google Trends data returned for keyword={keyword!r}")
@@ -67,7 +90,7 @@ class GoogleTrendsClient:
         latest_score = float(series.iloc[-1])
         avg_score = float(series.mean())
         peak_score = float(series.max())
-        
+
         log.info(
             "Fetched %s points latest=%.2f avg=%.2f peak=%.2f",
             len(series),
@@ -91,7 +114,10 @@ class GoogleTrendsClient:
                 trend_direction = "falling"
 
         try:
-            regions_df = self.client.interest_by_region(resolution="COUNTRY", inc_low_vol=False)
+            regions_df = self.client.interest_by_region(
+                resolution="COUNTRY",
+                inc_low_vol=False,
+            )
             top_regions = (
                 regions_df.sort_values(by=keyword, ascending=False)
                 .head(10)[[keyword]]
@@ -112,7 +138,7 @@ class GoogleTrendsClient:
             latest_score=latest_score,
             avg_score=avg_score,
             peak_score=peak_score,
-            top_regions=top_regions
+            top_regions=top_regions,
         )
 
 
