@@ -3,6 +3,7 @@
 A RAG application that helps evaluate the business potential of an Android or App Store app idea.
 
 The app analyzes market context and supporting data to produce:
+
 - a profitability score
 - a market risk assessment
 - monetization recommendations
