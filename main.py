@@ -1,6 +1,7 @@
 import streamlit as st
 import logging
 import copy
+from app.chatbot import render_chatbot_step
 from app.state.form_state import init_form_state
 from app.ui.form_steps.step_bussiness import render_business_step
 from app.ui.form_steps.step_idea import render_idea_step
@@ -54,7 +55,7 @@ elif step == 3:
         st.stop()
     render_review_step(rag_agent)
 elif step == 4:
-    render_result_step()
+    render_chatbot_step()
 else:
     st.error("Invalid program state")
     

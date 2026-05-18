@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Iterable
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from rag.loaders.csv_loader import CsvLoader
 from rag.loaders.pdf_loader import PdfLoader
-from rag.loaders.csv_loader import CSVLoader
 from rag.utils.google_play_document_formatter import prepare_google_play_document
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ pdf_splitter = RecursiveCharacterTextSplitter(
     chunk_overlap=200,
 )
 
-csv_loader = CSVLoader()
+csv_loader = CsvLoader()
 
 def index_pdf_documents(vector_store, pdf_paths: Iterable[Path]):
     
@@ -43,17 +43,24 @@ def index_pdf_documents(vector_store, pdf_paths: Iterable[Path]):
 
     return document_ids
 
-def index_google_play_csv_documents(vector_store, csv_path: Path):
+def index_google_play_csv_documents(vector_store, csv_path: Path, batch_size: int = 5000):
 
     docs = csv_loader.load_csv_data(csv_path)
 
-    cleaned_docs = []
-    for doc in docs:
-        cleaned_doc = prepare_google_play_document(doc)
-        cleaned_docs.append(cleaned_doc)
-        
-    logger.info("Finished preparing %s Goggle Play store documents", len(cleaned_docs))
+    cleaned_docs = [prepare_google_play_document(doc) for doc in docs]
+    logger.info("Finished preparing %s Google Play store documents", len(cleaned_docs))
 
-    document_ids = vector_store.add_documents(cleaned_docs)
-    logger.info("Indexed %s CSV rows", len(document_ids))
-    return document_ids
+    all_ids = []
+    for i in range(0, len(cleaned_docs), batch_size):
+        batch = cleaned_docs[i:i + batch_size]
+        batch_ids = vector_store.add_documents(batch)
+        all_ids.extend(batch_ids)
+        logger.info(
+            "Indexed CSV batch %s-%s (%s docs)",
+            i,
+            i + len(batch) - 1,
+            len(batch),
+        )
+
+    logger.info("Indexed %s CSV rows", len(all_ids))
+    return all_ids

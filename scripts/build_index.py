@@ -12,7 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from rag.indexing.config import (
-    DEFAULT_PDF_PATH,
+    PDF_PATHS,
     DEFAULT_CSV_PATH,
     PERSIST_DIRECTORY,
     PDF_COLLECTION_NAME,
@@ -49,17 +49,15 @@ def main() -> None:
     pdf_vector_store.reset_collection()
     csv_vector_store.reset_collection()
 
-    pdf_path = Path(DEFAULT_PDF_PATH)
     index_pdf_documents(
         vector_store=pdf_vector_store,
-        pdf_path=pdf_path,
+        pdf_paths=PDF_PATHS,
     )
     logger.info("PDF documents indexed.")
 
-    csv_path = Path(DEFAULT_CSV_PATH)
     index_google_play_csv_documents(
         vector_store=csv_vector_store,
-        csv_path=csv_path,
+        csv_path=DEFAULT_CSV_PATH,
     )
     logger.info("CSV documents indexed.")
 
