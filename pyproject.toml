@@ -21,8 +21,20 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "pytest>=9.0.3",
+    "pytest-mock>=3.15.1",
     "ruff>=0.15.9",
 ]
 
 [tool.ruff.lint]
 extend-select = ["B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-q"
+markers = [
+  "integration: calls external services (LLM/API)"
+]
+pythonpath = ["."]

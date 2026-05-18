@@ -10,6 +10,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from app.domain.feasibility_analysis_response import FeasibilityAnalysisResponse
 from rag.indexing.config import (
+    DEFAULT_CHAT_MODEL,
     PERSIST_DIRECTORY,
     PDF_COLLECTION_NAME,
     CSV_COLLECTION_NAME,
@@ -60,7 +61,7 @@ def create_rag_agent():
 
     tools = [retrieve_pdf_context, retrieve_csv_context, google_trends]
 
-    model = init_chat_model("gpt-4.1-mini")
+    model = init_chat_model(DEFAULT_CHAT_MODEL)
     checkpointer_connection = sqlite3.connect("checkpoints.db", check_same_thread=False)
     checkpointer = SqliteSaver(checkpointer_connection)
 

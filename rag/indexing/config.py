@@ -13,3 +13,4 @@ PDF_PATHS = [
 ]
 
 DEFAULT_CSV_PATH = Path("data/csv/googleplaystore.csv")
+DEFAULT_CHAT_MODEL = "gpt-4.1-mini"

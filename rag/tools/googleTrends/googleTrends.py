@@ -10,7 +10,6 @@ from pytrends.request import TrendReq
 
 logger = logging.getLogger(__name__)
 
-
 @dataclass
 class TrendsResult:
     keyword: str
