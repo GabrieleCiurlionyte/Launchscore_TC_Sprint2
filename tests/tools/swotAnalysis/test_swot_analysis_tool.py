@@ -1,5 +1,5 @@
-# tests/tools/swotAnalysis/test_swot_analysis_tool_integration.py
 import os
+import json
 import pytest
 
 from rag.tools.swotAnalysis.swotAnalysisTool import generate_swot_analysis
@@ -16,6 +16,7 @@ def test_generate_swot_analysis_real_call():
         "target_market": "Digital nomads",
         "context": "Growing remote work market"
     })
+    print("\nSWOT result:\n" + json.dumps(result, indent=2, ensure_ascii=False))
 
     assert isinstance(result, dict)
     for key in ["strengths", "weaknesses", "opportunities", "threats"]:

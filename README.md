@@ -46,3 +46,25 @@ uv run streamlit run main.py
 ```
 
 Re-run `uv run python scripts/build_index.py` whenever the source PDF data changes. The Streamlit app now only loads the persisted vector store at runtime, so it does not re-embed the document corpus on every rerun.
+
+## Testing
+
+Tests are stored under the `tests/` folder. Example:
+
+- `tests/tools/swotAnalysis/test_swot_analysis_tool.py`
+
+Run all tests:
+
+```bash
+uv run pytest
+```
+
+Run only integration tests:
+
+```bash
+uv run pytest -m integration -s
+```
+
+The `integration` marker is optional, but recommended. It lets you separate slower tests that call external APIs from fast local/unit tests.
+
+Integration tests that call OpenAI require `OPENAI_API_KEY` in your environment (or `.env` if loaded by `tests/conftest.py`).
