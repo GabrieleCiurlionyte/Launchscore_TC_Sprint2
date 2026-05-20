@@ -1,18 +1,9 @@
-from typing import Literal
 from pydantic import BaseModel, Field, model_validator
-
+from app.domain.monetization_model import MonetizationModel
 from app.domain.payment_period import PaymentPeriod
 
 class BusinessInput(BaseModel):
-    monetization_model: Literal[
-        "Subscription",
-        "Freemium",
-        "Ads",
-        "One-time purchase",
-        "In-app purchases",
-        "Marketplace fee",
-        "Not sure",
-    ]
+    monetization_model: MonetizationModel
     expected_price_eur: float = Field(ge=0)
     expected_price_period: PaymentPeriod
     paid_features: list[str] = Field(default_factory=list)

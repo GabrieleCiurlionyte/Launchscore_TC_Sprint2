@@ -4,7 +4,7 @@ import streamlit as st
 from app.domain.payment_period import PaymentPeriod
 from app.ui.navigation import next_step, prev_step
 from app.utils.text_helpers import split_comma_text
-from app.domain.bussiness_input import BusinessInput
+from app.domain.input.bussiness_input import BusinessInput
 
 
 def render_business_step() -> None:

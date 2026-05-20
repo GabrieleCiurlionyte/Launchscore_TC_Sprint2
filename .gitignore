@@ -12,6 +12,8 @@ __pycache__/
 # Local vector store / checkpoints
 chroma_langchain.db/
 checkpoints.db
+checkpoints.db-shm
+checkpoints.db-wal
 *.sqlite
 *.db
 

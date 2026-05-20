@@ -9,6 +9,8 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from rag.middleware.logging_middleware import log_rag_end, log_rag_start, monitor_tool
 from rag.prompts.system_prompt import SYSTEM_PROMPT
+from rag.tools.revenueProjection.revenue_projection_tool import estimate_revenue_projection
+from rag.tools.swotAnalysis.swotAnalysisTool import generate_swot_analysis
 from settings import get_settings
 from rag.tools.make_retrieve_context_tool import make_retrieve_context_tool
 from rag.tools.googleTrends.googleTrendsTool import google_trends
@@ -53,7 +55,7 @@ def create_rag_agent():
         "Use for app-level dataset facts (ratings, installs, category, pricing) from CSV.",
     )
 
-    tools = [retrieve_pdf_context, retrieve_csv_context, google_trends]
+    tools = [retrieve_pdf_context, retrieve_csv_context, google_trends, estimate_revenue_projection, generate_swot_analysis,]
 
     model = init_chat_model(
         settings.openai_model,

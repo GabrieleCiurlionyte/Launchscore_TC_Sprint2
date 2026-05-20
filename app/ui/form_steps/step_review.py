@@ -1,7 +1,6 @@
 from pydantic import ValidationError
 import streamlit as st
-from app.domain.feasability_form_input import FeasabilityFormInput
-
+from app.domain.input.feasability_form_input import FeasabilityFormInput
 from app.ui.navigation import prev_step
 
 def render_review_step(agent) -> None:
