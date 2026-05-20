@@ -1,6 +1,4 @@
-#TODO: go back to the system prompting section and implement the same setup?
-# TODO: add a few-shot examples 
-FEASIBILITY_SYSTEM_PROMPT = """
+SYSTEM_PROMPT = """
 You are an analyst evaluating Android and Apple mobile app ideas for feasibility and profitability.
 
 Your job is to assess the user's app idea using:

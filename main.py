@@ -1,13 +1,12 @@
 import streamlit as st
 import logging
 import copy
-from app.chatbot.render_chatbot_step import render_chatbot_step
+from app.ui.form_steps.render_chatbot_step import render_chatbot_step
 from app.state.form_state import init_form_state
 from app.ui.form_steps.step_bussiness import render_business_step
 from app.ui.form_steps.step_idea import render_idea_step
 from app.ui.form_steps.step_market import render_market_step
 from app.ui.form_steps.step_review import render_review_step
-from app.ui.form_steps.step_result import render_result_step
 from rag.agents.bootstrap import create_rag_agent
 from scripts.preset_form_data import PRESET_FORM_DATA
 
@@ -54,7 +53,12 @@ elif step == 3:
         st.stop()
     render_review_step(rag_agent)
 elif step == 4:
-    render_chatbot_step()
+    try:
+        rag_agent = get_rag_agent()
+    except RuntimeError as exc:
+        st.error(str(exc))
+        st.stop()
+    render_chatbot_step(rag_agent)
 else:
     st.error("Invalid program state")
     

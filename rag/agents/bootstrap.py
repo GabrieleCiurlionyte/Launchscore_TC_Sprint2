@@ -7,13 +7,12 @@ from langchain_chroma import Chroma
 from langchain_community.tools import BaseTool
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from rag.prompts.system_prompt import SYSTEM_PROMPT
 from settings import get_settings
-from app.domain.feasibility_analysis_response import FeasibilityAnalysisResponse
 from rag.tools.make_retrieve_context_tool import make_retrieve_context_tool
 from rag.tools.googleTrends.googleTrendsTool import google_trends
 from rag.indexing.embedder import create_embeddings
 from rag.indexing.vector_store import create_vector_store, get_document_count
-from rag.prompts.system_prompt import FEASIBILITY_SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -66,9 +65,8 @@ def create_rag_agent():
     return create_agent(
         model=model,
         tools=tools,
-        system_prompt=FEASIBILITY_SYSTEM_PROMPT,
+        system_prompt=SYSTEM_PROMPT,
         checkpointer=checkpointer,
-        response_format=FeasibilityAnalysisResponse,
     )
 
 def create_retrieve_context_tool(vector_store : Chroma, context_name: str, tool_description: str) -> BaseTool:
