@@ -3,14 +3,15 @@ import logging
 from langchain.chat_models import init_chat_model
 from langchain.tools import tool
 
-from rag.indexing.config import DEFAULT_CHAT_MODEL
+from settings import get_settings
 from rag.tools.swotAnalysis.swot_analysis_input import SWOTInput
 from rag.tools.swotAnalysis.swot_analysis_output import SWOTOutput
 from rag.tools.swotAnalysis.swot_prompt import SWOT_PROMPT
 
 logger = logging.getLogger(__name__)
+settings = get_settings()
 
-model = init_chat_model(DEFAULT_CHAT_MODEL,
+model = init_chat_model(settings.openai_model,
                         temperature=0,
                         timeout=20,
                         max_tokens=1000,
