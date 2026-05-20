@@ -1,7 +1,6 @@
 from pydantic import ValidationError
 import streamlit as st
 from app.domain.feasability_form_input import FeasabilityFormInput
-from rag.RAG import run_feasibility_analysis
 
 from app.ui.navigation import prev_step
 
@@ -18,27 +17,16 @@ def render_review_step(agent) -> None:
     st.subheader("Structured RAG Input")
     st.json(formInput)
 
-    col1, col2 = st.columns(2)
+    col1, spacer, col2 = st.columns([1, 5, 1])
 
     with col1:
         st.button("Back", on_click=prev_step)
 
     with col2:
-        if st.button("Run RAG Analysis"):
+        if st.button("Open Chatbot"):
             st.session_state.analysis_error = None
-            try:
-                result = run_feasibility_analysis(
-                    agent,
-                    formInput,
-                    thread_id=st.session_state.analysis_thread_id,
-                )
-                st.session_state.analysis_result = result
-                st.session_state.step = 4
-                st.rerun()
-            except Exception as exc:
-                st.session_state.analysis_result = None
-                st.session_state.analysis_error = str(exc)
-                st.error(f"Analysis failed: {exc}")
+            st.session_state.step = 4
+            st.rerun()
                 
     if st.session_state.analysis_error:
         st.error(st.session_state.analysis_error)
