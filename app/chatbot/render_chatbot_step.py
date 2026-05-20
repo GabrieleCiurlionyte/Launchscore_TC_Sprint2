@@ -1,6 +1,6 @@
 import streamlit as st
 from langchain.chat_models import init_chat_model
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 from app.chatbot.prompts.chatbot_prompt import CHATBOT_PROMPT
 from app.utils.bussiness_context_formatter import format_bussiness_context
