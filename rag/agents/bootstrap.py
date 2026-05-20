@@ -7,6 +7,7 @@ from langchain_chroma import Chroma
 from langchain_community.tools import BaseTool
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from rag.agents.model_factory import create_chat_model
 from rag.middleware.logging_middleware import log_rag_end, log_rag_start, monitor_tool
 from rag.prompts.system_prompt import SYSTEM_PROMPT
 from rag.tools.revenueProjection.revenue_projection_tool import estimate_revenue_projection
@@ -57,9 +58,9 @@ def create_rag_agent():
 
     tools = [retrieve_pdf_context, retrieve_csv_context, google_trends, estimate_revenue_projection, generate_swot_analysis,]
 
-    model = init_chat_model(
-        settings.openai_model,
-        api_key=settings.openai_api_key
+    model = create_chat_model(
+        max_tokens=1500,
+        timeout=30,
     )
     
     checkpointer_connection = sqlite3.connect("checkpoints.db", check_same_thread=False)

@@ -1,8 +1,7 @@
 import logging
 
-from langchain.chat_models import init_chat_model
 from langchain.tools import tool
-
+from rag.agents.model_factory import create_structured_chat_model
 from settings import get_settings
 from rag.tools.swotAnalysis.swot_analysis_input import SWOTInput
 from rag.tools.swotAnalysis.swot_analysis_output import SWOTOutput
@@ -11,14 +10,10 @@ from rag.tools.swotAnalysis.swot_prompt import SWOT_PROMPT
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-model = init_chat_model(
-    settings.openai_model,
-    api_key=settings.openai_api_key,
-    temperature=0,
-    timeout=20,
+model = create_structured_chat_model(
+    SWOTOutput,
     max_tokens=1000,
-    max_retries=2,
-).with_structured_output(SWOTOutput)
+)
 
 @tool(args_schema=SWOTInput)
 def generate_swot_analysis(
@@ -54,4 +49,4 @@ def generate_swot_analysis(
 
     except Exception as e:
         logger.exception("SWOT analysis generation failed")
-        raise RuntimeError(f"Failed to generate SWOT analysis: {str(e)}")
+        raise RuntimeError(f"Failed to generate SWOT analysis: {e}") from e
