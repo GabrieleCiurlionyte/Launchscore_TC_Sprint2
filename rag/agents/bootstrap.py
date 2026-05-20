@@ -7,6 +7,7 @@ from langchain_chroma import Chroma
 from langchain_community.tools import BaseTool
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from rag.middleware.logging_middleware import log_rag_end, log_rag_start, monitor_tool
 from rag.prompts.system_prompt import SYSTEM_PROMPT
 from settings import get_settings
 from rag.tools.make_retrieve_context_tool import make_retrieve_context_tool
@@ -67,6 +68,7 @@ def create_rag_agent():
         tools=tools,
         system_prompt=SYSTEM_PROMPT,
         checkpointer=checkpointer,
+        middleware=[log_rag_start, monitor_tool, log_rag_end]
     )
 
 def create_retrieve_context_tool(vector_store : Chroma, context_name: str, tool_description: str) -> BaseTool:
