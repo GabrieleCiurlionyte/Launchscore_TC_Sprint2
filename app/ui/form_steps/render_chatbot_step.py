@@ -2,7 +2,7 @@ import streamlit as st
 
 from app.utils.bussiness_context_formatter import format_bussiness_context
 from app.ui.navigation import prev_step
-from rag.RAG import chat_with_rag_agent
+from rag.RAG import run_agent_with_event_streaming
 
 
 def render_chatbot_step(agent) -> None:
@@ -28,17 +28,28 @@ def render_chatbot_step(agent) -> None:
         st.markdown(user_message)
 
     try:
-        text = chat_with_rag_agent(
+        final_text, tool_results, final_state = run_agent_with_event_streaming(
             agent=agent,
             user_message=user_message,
             business_context=format_bussiness_context(st.session_state.form_data),
             thread_id=st.session_state.chat_thread_id,
-        )
+)
     except Exception as exc:
         st.error(f"Chat failed: {exc}")
         return
 
-    st.session_state.chat_history.append({"role": "assistant", "content": text})
+    st.session_state.chat_history.append(
+    {"role": "assistant", "content": final_text or "No response returned."}
+)
 
     with st.chat_message("assistant"):
-        st.markdown(text)
+        st.markdown(final_text or "No response returned.")
+        
+        if tool_results:
+            with st.expander("Evidence used"):
+                for result in tool_results:
+                    st.write(f"Tool: {result['tool_name']}")
+                    if result.get("error"):
+                        st.error(result["error"])
+                    else:
+                        st.write(result["summary"])
