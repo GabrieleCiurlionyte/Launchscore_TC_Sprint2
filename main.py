@@ -13,7 +13,6 @@ from scripts.preset_form_data import PRESET_FORM_DATA
 
 logging.basicConfig(level=logging.INFO)
 
-# TODO: thesse steps maybe should be an enum and transferred somewhere else
 STEPS = ["Idea", "Market", "Business", "Review", "Result"]
 
 st.set_page_config(page_title="App Idea Feasibility Calculator", layout="centered")

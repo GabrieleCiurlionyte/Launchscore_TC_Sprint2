@@ -15,9 +15,10 @@ It is designed to support early-stage product research by turning market signals
 
 This repository uses [`uv`](https://docs.astral.sh/uv/) for Python project and dependency management.
 
-After pulling the repository, install dependencies and start the Streamlit app with:
+After pulling the repository, create a local `.env` file from `.env.example`, populate `OPENAI_API_KEY`, and then install dependencies and start the Streamlit app:
 
 ```bash
+copy .env.example .env
 uv sync
 uv run python scripts/build_index.py
 uv run streamlit run main.py
@@ -40,10 +41,13 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 Then clone the repository and run:
 
 ```bash
+copy .env.example .env
 uv sync
 uv run python scripts/build_index.py
 uv run streamlit run main.py
 ```
+
+Before launching the app locally, open `.env` and set `OPENAI_API_KEY` to a valid key. The checked-in `.env.example` shows the expected variables and defaults.
 
 Re-run `uv run python scripts/build_index.py` whenever the source PDF data changes. The Streamlit app now only loads the persisted vector store at runtime, so it does not re-embed the document corpus on every rerun.
 

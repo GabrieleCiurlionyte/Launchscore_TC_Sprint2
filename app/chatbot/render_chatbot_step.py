@@ -1,14 +1,16 @@
 import streamlit as st
 from langchain.chat_models import init_chat_model
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
+from settings import get_settings
 from app.chatbot.prompts.chatbot_prompt import CHATBOT_PROMPT
 from app.utils.bussiness_context_formatter import format_bussiness_context
-from rag.indexing.config import DEFAULT_CHAT_MODEL
 from app.ui.navigation import prev_step
 
 
 def render_chatbot_step() -> None:
+    settings = get_settings()
+
     st.subheader("Business Chatbot")
 
     if "chat_history" not in st.session_state:
@@ -17,7 +19,7 @@ def render_chatbot_step() -> None:
     if st.button("Back", on_click=prev_step):
         return
 
-    model = init_chat_model(DEFAULT_CHAT_MODEL, temperature=0.2)
+    model = init_chat_model(settings.openai_model, temperature=0.2)
 
     prompt = ChatPromptTemplate.from_messages([
         ("system",

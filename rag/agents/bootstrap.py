@@ -1,20 +1,14 @@
 import logging
 import sqlite3
 
-from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_chroma import Chroma
 from langchain_community.tools import BaseTool
 from langgraph.checkpoint.sqlite import SqliteSaver
 
+from settings import get_settings
 from app.domain.feasibility_analysis_response import FeasibilityAnalysisResponse
-from rag.indexing.config import (
-    DEFAULT_CHAT_MODEL,
-    PERSIST_DIRECTORY,
-    PDF_COLLECTION_NAME,
-    CSV_COLLECTION_NAME,
-) 
 from rag.tools.make_retrieve_context_tool import make_retrieve_context_tool
 from rag.tools.googleTrends.googleTrendsTool import google_trends
 from rag.indexing.embedder import create_embeddings
@@ -25,20 +19,20 @@ logger = logging.getLogger(__name__)
 
 
 def create_rag_agent():
-    load_dotenv()
+    settings = get_settings()
 
     embeddings = create_embeddings()
 
     pdf_store = create_vector_store(
         embeddings=embeddings,
-        persist_directory=PERSIST_DIRECTORY,
-        collection_name=PDF_COLLECTION_NAME
+        persist_directory=settings.persist_directory,
+        collection_name=settings.pdf_collection_name,
     )
 
     csv_store = create_vector_store(
         embeddings=embeddings,
-        persist_directory=PERSIST_DIRECTORY,
-        collection_name=CSV_COLLECTION_NAME
+        persist_directory=settings.persist_directory,
+        collection_name=settings.csv_collection_name,
     )
 
     if get_document_count(pdf_store) == 0 or get_document_count(csv_store) == 0:
@@ -61,7 +55,7 @@ def create_rag_agent():
 
     tools = [retrieve_pdf_context, retrieve_csv_context, google_trends]
 
-    model = init_chat_model(DEFAULT_CHAT_MODEL)
+    model = init_chat_model(settings.openai_model)
     checkpointer_connection = sqlite3.connect("checkpoints.db", check_same_thread=False)
     checkpointer = SqliteSaver(checkpointer_connection)
 
