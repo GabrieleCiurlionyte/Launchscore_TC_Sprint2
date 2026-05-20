@@ -11,12 +11,14 @@ from rag.tools.swotAnalysis.swot_prompt import SWOT_PROMPT
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
-model = init_chat_model(settings.openai_model,
-                        temperature=0,
-                        timeout=20,
-                        max_tokens=1000,
-                        max_retries=2
-                        ).with_structured_output(SWOTOutput)
+model = init_chat_model(
+    settings.openai_model,
+    api_key=settings.openai_api_key,
+    temperature=0,
+    timeout=20,
+    max_tokens=1000,
+    max_retries=2,
+).with_structured_output(SWOTOutput)
 
 @tool(args_schema=SWOTInput)
 def generate_swot_analysis(

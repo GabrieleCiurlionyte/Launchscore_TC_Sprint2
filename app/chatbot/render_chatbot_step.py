@@ -19,7 +19,10 @@ def render_chatbot_step() -> None:
     if st.button("Back", on_click=prev_step):
         return
 
-    model = init_chat_model(settings.openai_model, temperature=0.2)
+    model = init_chat_model(
+        settings.openai_model,
+        api_key=settings.openai_api_key,
+        temperature=0.2)
 
     prompt = ChatPromptTemplate.from_messages([
         ("system",

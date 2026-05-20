@@ -55,7 +55,11 @@ def create_rag_agent():
 
     tools = [retrieve_pdf_context, retrieve_csv_context, google_trends]
 
-    model = init_chat_model(settings.openai_model)
+    model = init_chat_model(
+        settings.openai_model,
+        api_key=settings.openai_api_key
+    )
+    
     checkpointer_connection = sqlite3.connect("checkpoints.db", check_same_thread=False)
     checkpointer = SqliteSaver(checkpointer_connection)
 
