@@ -3,6 +3,7 @@ import streamlit as st
 from app.utils.bussiness_context_formatter import format_bussiness_context
 from app.ui.navigation import prev_step
 from rag.RAG import run_agent_with_event_streaming
+from rag.guardrails.chat_message_validator import ChatMessageValidationError
 
 
 def render_chatbot_step(agent) -> None:
@@ -34,7 +35,18 @@ def render_chatbot_step(agent) -> None:
             business_context=format_bussiness_context(st.session_state.form_data),
             thread_id=st.session_state.chat_thread_id,
 )
+    except ChatMessageValidationError as exc:
+        assistant_message = str(exc)
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": assistant_message}
+        )
+
+        with st.chat_message("assistant"):
+            st.markdown(assistant_message)
+
+        return
     except Exception as exc:
+        st.session_state.chat_history.pop()
         st.error(f"Chat failed: {exc}")
         return
 

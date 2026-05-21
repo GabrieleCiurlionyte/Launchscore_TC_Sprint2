@@ -1,9 +1,13 @@
 import logging
 import streamlit as st
 
+from rag.guardrails.chat_message_validator import ensure_valid_chat_message
+
 logger = logging.getLogger(__name__)
 
 def run_agent_with_event_streaming(agent, user_message: str, business_context: str, thread_id: str) -> str:
+    cleaned_user_message = ensure_valid_chat_message(user_message)
+
     payload = {
         "messages": [
             {
@@ -12,7 +16,7 @@ def run_agent_with_event_streaming(agent, user_message: str, business_context: s
                     "Business context:\n"
                     f"{business_context}\n\n"
                     "User question:\n"
-                    f"{user_message}"
+                    f"{cleaned_user_message}"
                 ),
             }
         ]
