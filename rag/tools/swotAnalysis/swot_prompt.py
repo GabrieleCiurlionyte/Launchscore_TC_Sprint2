@@ -34,4 +34,5 @@ Examples of good SWOT analysis:
 
 Output requirements:
 - Output must follow the required structured schema.
+- Include strengths, weaknesses, opportunities, threats, and a concise overall assessment.
 """
