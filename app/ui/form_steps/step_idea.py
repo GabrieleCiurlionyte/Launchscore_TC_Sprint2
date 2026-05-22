@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 import streamlit as st
 
-from app.domain.idea_input import IdeaInput
+from app.domain.input.idea_input import IdeaInput
 from app.ui.navigation import next_step
 from app.utils.text_helpers import split_comma_text
 

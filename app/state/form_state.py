@@ -16,6 +16,9 @@ def init_form_state() -> None:
 
     if "analysis_thread_id" not in st.session_state:
         st.session_state.analysis_thread_id = str(uuid.uuid4())
+
+    if "chat_thread_id" not in st.session_state:
+        st.session_state.chat_thread_id = str(uuid.uuid4())
     
     if "analysis_result" not in st.session_state:
         st.session_state.analysis_result = None

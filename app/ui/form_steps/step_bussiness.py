@@ -1,9 +1,10 @@
 from pydantic import ValidationError
 import streamlit as st
 
+from app.domain.payment_period import PaymentPeriod
 from app.ui.navigation import next_step, prev_step
 from app.utils.text_helpers import split_comma_text
-from app.domain.bussiness_input import BusinessInput
+from app.domain.input.bussiness_input import BusinessInput
 
 
 def render_business_step() -> None:
@@ -42,7 +43,7 @@ def render_business_step() -> None:
             help="Use 0 if the app will be free at launch.",
         )
 
-        billing_period_options = ["Monthly", "Yearly", "One-time", "Free", "Not sure"]
+        billing_period_options = [period.value for period in PaymentPeriod]
         saved_billing_period = data["business"].get(
             "expected_price_period",
             "Not sure",

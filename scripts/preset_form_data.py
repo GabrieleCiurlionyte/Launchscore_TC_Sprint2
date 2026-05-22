@@ -1,3 +1,6 @@
+from app.domain.payment_period import PaymentPeriod
+
+
 PRESET_FORM_DATA = {
     "idea": {
         "one_sentence_pitch": (
@@ -43,7 +46,7 @@ PRESET_FORM_DATA = {
     "business": {
         "monetization_model": "Freemium",
         "expected_price_eur": 9.99,
-        "expected_price_period": "Monthly",
+        "expected_price_period": PaymentPeriod.MONTHLY,
         "paid_features": [
             "Automated invoice reminders",
             "AI-generated polite follow-up emails",

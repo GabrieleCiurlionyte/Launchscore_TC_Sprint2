@@ -3,6 +3,10 @@ def format_bussiness_context(form_data: dict) -> str:
     market = form_data.get("market", {})
     business = form_data.get("business", {})
 
+    price_period = business.get("expected_price_period", "")
+    if hasattr(price_period, "value"):
+        price_period = price_period.value
+
     return f"""
 Idea:
 - Pitch: {idea.get("one_sentence_pitch", "")}
@@ -18,7 +22,7 @@ Market:
 
 Business:
 - Monetization: {business.get("monetization_model", "")}
-- Price: {business.get("expected_price_eur", "")} EUR ({business.get("expected_price_period", "")})
+- Price: {business.get("expected_price_eur", "")} EUR ({price_period})
 - Paid features: {", ".join(business.get("paid_features", [])) or "Not specified"}
 - Competitors: {", ".join(business.get("known_competitors", [])) or "Not specified"}
 - Differentiation: {business.get("differentiation", "")}
